@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Maven Settings for Nexus Authentication
+  
+  Add this to your Maven settings.xml file:
+  Location: C:\Users\hp\.m2\settings.xml
+  
+  Or use the global settings.xml:
+  Location: C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.11\conf\settings.xml
+-->
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 
+          https://maven.apache.org/xsd/settings-1.2.0.xsd">
+  
+  <!-- ========================================= -->
+  <!-- NEXUS AUTHENTICATION CREDENTIALS          -->
+  <!-- ========================================= -->
+  <servers>
+    <!-- Nexus Release Repository -->
+    <server>
+      <id>nexus-releases</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
+    
+    <!-- Nexus Snapshot Repository -->
+    <server>
+      <id>nexus-snapshots</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
+  </servers>
+  
+  <!-- ========================================= -->
+  <!-- NEXUS MIRROR (Optional)                   -->
+  <!-- ========================================= -->
+  <mirrors>
+    <!-- Uncomment to use Nexus as a mirror for Maven Central -->
+    <!--
+    <mirror>
+      <id>nexus</id>
+      <mirrorOf>central</mirrorOf>
+      <name>Nexus Public Repository</name>
+      <url>http://localhost:8081/repository/maven-public/</url>
+    </mirror>
+    -->
+  </mirrors>
+  
+  <!-- ========================================= -->
+  <!-- PROFILES                                  -->
+  <!-- ========================================= -->
+  <profiles>
+    <profile>
+      <id>nexus</id>
+      <repositories>
+        <repository>
+          <id>nexus-releases</id>
+          <url>http://localhost:8081/repository/maven-releases/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>nexus-snapshots</id>
+          <url>http://localhost:8081/repository/maven-snapshots/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      
+      <pluginRepositories>
+        <pluginRepository>
+          <id>nexus-plugins</id>
+          <url>http://localhost:8081/repository/maven-public/</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+    
+    <!-- SonarQube Profile -->
+    <profile>
+      <id>sonar</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
+      </properties>
+    </profile>
+  </profiles>
+  
+  <!-- ========================================= -->
+  <!-- ACTIVE PROFILES                           -->
+  <!-- ========================================= -->
+  <activeProfiles>
+    <activeProfile>nexus</activeProfile>
+    <activeProfile>sonar</activeProfile>
+  </activeProfiles>
+  
+</settings>

@@ -1,0 +1,148 @@
+<!-- Add this configuration to your existing pom.xml -->
+
+<!-- ========================================= -->
+<!-- 1. ADD DISTRIBUTION MANAGEMENT SECTION   -->
+<!-- ========================================= -->
+<!-- Place this BEFORE or AFTER <dependencies> section -->
+
+<distributionManagement>
+    <repository>
+        <id>nexus-releases</id>
+        <name>Nexus Release Repository</name>
+        <url>http://localhost:8081/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+        <id>nexus-snapshots</id>
+        <name>Nexus Snapshot Repository</name>
+        <url>http://localhost:8081/repository/maven-snapshots/</url>
+    </snapshotRepository>
+</distributionManagement>
+
+<!-- ========================================= -->
+<!-- 2. ADD/UPDATE BUILD PLUGINS SECTION      -->
+<!-- ========================================= -->
+<!-- Place this inside <build><plugins> section -->
+
+<build>
+    <plugins>
+        <!-- Spring Boot Maven Plugin -->
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+                <mainClass>org.sid.servicecountry.ServiceCountryApplication</mainClass>
+            </configuration>
+        </plugin>
+        
+        <!-- Maven Deploy Plugin -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>3.1.1</version>
+        </plugin>
+        
+        <!-- Maven Surefire Plugin for Tests -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.2.5</version>
+        </plugin>
+        
+        <!-- SonarQube Maven Plugin -->
+        <plugin>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>3.10.0.2594</version>
+        </plugin>
+        
+        <!-- JaCoCo for Code Coverage -->
+        <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.11</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>prepare-agent</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>report</id>
+                    <phase>test</phase>
+                    <goals>
+                        <goal>report</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+
+<!-- ========================================= -->
+<!-- 3. EXAMPLE COMPLETE pom.xml STRUCTURE    -->
+<!-- ========================================= -->
+
+<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/>
+    </parent>
+    
+    <groupId>com.countryservice</groupId>
+    <artifactId>service-country</artifactId>
+    <version>1.0.0</version>
+    <packaging>war</packaging>
+    
+    <name>Country Service</name>
+    <description>Country Service API</description>
+    
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <distributionManagement>
+        ... (see above)
+    </distributionManagement>
+    
+    <build>
+        <plugins>
+            ... (see above)
+        </plugins>
+    </build>
+</project>
+-->
