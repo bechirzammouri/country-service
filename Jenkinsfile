@@ -33,14 +33,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo '🔨 Building the project...'
-                bat 'mvn clean compile'
+                sh 'mvn clean compile'
             }
         }
         
         stage('Unit Tests') {
             steps {
                 echo '🧪 Running unit tests...'
-                bat 'mvn test'
+                sh 'mvn test'
             }
             post {
                 always {
@@ -52,7 +52,7 @@ pipeline {
         stage('Package') {
             steps {
                 echo '📦 Packaging the application...'
-                bat 'mvn package -DskipTests'
+                sh 'mvn package -DskipTests'
             }
         }
         
@@ -60,7 +60,7 @@ pipeline {
             steps {
                 echo '🔍 Running SonarQube analysis...'
                 withSonarQubeEnv('SonarQube') { // Configure 'SonarQube' server in Jenkins
-                    bat """
+                    sh """
                         mvn sonar:sonar ^
                           -Dsonar.projectKey=${SONAR_PROJECT_KEY} ^
                           -Dsonar.host.url=${SONAR_HOST_URL}
@@ -81,7 +81,7 @@ pipeline {
         stage('Generate CNES Report') {
             steps {
                 echo '📊 Generating CNES SonarQube report...'
-                bat """
+                sh """
                     java -jar sonar-cnes-report.jar ^
                       -s ${SONAR_HOST_URL} ^
                       -t %SONAR_TOKEN% ^
@@ -96,7 +96,7 @@ pipeline {
                 echo '📤 Deploying artifacts to Nexus...'
                 script {
                     // Deploy JAR/WAR artifact
-                    bat 'mvn deploy -DskipTests'
+                    sh 'mvn deploy -DskipTests'
                     
                     // Deploy CNES Report to Nexus
                     withCredentials([usernamePassword(
@@ -106,7 +106,7 @@ pipeline {
                     )]) {
                         def reportFile = findFiles(glob: 'target/sonar-reports/*.docx')[0]
                         if (reportFile) {
-                            bat """
+                            sh """
                                 curl -v -u %NEXUS_USER%:%NEXUS_PASS% ^
                                   --upload-file ${reportFile.path} ^
                                   ${NEXUS_URL}/repository/${NEXUS_REPOSITORY}/com/countryservice/sonar-reports/${env.BUILD_NUMBER}/${reportFile.name}
@@ -129,7 +129,7 @@ pipeline {
                             usernameVariable: 'TOMCAT_USER',
                             passwordVariable: 'TOMCAT_PASS'
                         )]) {
-                            bat """
+                            sh """
                                 curl -v -u %TOMCAT_USER%:%TOMCAT_PASS% ^
                                   --upload-file ${warFile.path} ^
                                   "${TOMCAT_URL}/manager/text/deploy?path=/country-service&update=true"
