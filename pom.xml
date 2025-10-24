@@ -8,10 +8,10 @@
         <version>3.5.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>net.mohamed</groupId>
-    <artifactId>FirstMicroService</artifactId>
+    <groupId>net.bechir</groupId>
+    <artifactId>service-country</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>FirstMicroService</name>
+    <name>serviceCountry</name>
     <description>FirstMicroService</description>
     <url/>
     <licenses>
