@@ -33,5 +33,27 @@ pipeline{
                 sh 'mvn deploy -DskipTests -Dmaven.install.skip=true'
             }
         }
+        
+        stage('Download from Nexus and Deploy to Tomcat'){
+            steps {
+                sh '''
+                    # Define variables
+                    GROUP_ID=net.bechir
+                    ARTIFACT_ID=service-country
+                    VERSION=0.0.1-SNAPSHOT
+                    PACKAGING=jar
+                    NEXUS_URL=http://172.17.96.1:8081/repository/maven-snapshots
+                    
+                    # Download artifact from Nexus
+                    curl -u admin:admin -o ${ARTIFACT_ID}.${PACKAGING} \
+                    "${NEXUS_URL}/${GROUP_ID//.//}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
+                    
+                    # Deploy to Tomcat Manager
+                    curl -v -u deployer:deployer123 \
+                    --upload-file ${ARTIFACT_ID}.${PACKAGING} \
+                    "http://localhost:9090/manager/text/deploy?path=/country-service&update=true"
+                '''
+            }
+        }
     }
 }
