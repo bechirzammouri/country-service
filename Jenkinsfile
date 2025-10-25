@@ -36,7 +36,7 @@ pipeline{
         
         stage('Download Artifact from Nexus'){
             steps {
-                withCredentials([usernamePassword(credentialsId: 'nexus-credentials', 
+                withCredentials([usernamePassword(credentialsId: 'nexus-admin-account', 
                                           usernameVariable: 'NEXUS_USER', 
                                           passwordVariable: 'NEXUS_PASS')]) {
                     sh '''#!/bin/bash
