@@ -34,7 +34,7 @@ pipeline{
             }
         }
         
-        stage('Download from Nexus and Deploy to Tomcat'){
+        stage('Download Artifact from Nexus'){
             steps {
                 sh '''
                     # Define variables
@@ -45,12 +45,23 @@ pipeline{
                     NEXUS_URL=http://172.17.96.1:8081/repository/maven-snapshots
                     
                     # Download artifact from Nexus
+                    echo "Downloading ${ARTIFACT_ID}-${VERSION}.${PACKAGING} from Nexus..."
                     curl -u admin:admin -o ${ARTIFACT_ID}.${PACKAGING} \
                     "${NEXUS_URL}/${GROUP_ID//.//}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
                     
+                    # Verify download
+                    ls -lh ${ARTIFACT_ID}.${PACKAGING}
+                '''
+            }
+        }
+        
+        stage('Deploy to Tomcat'){
+            steps {
+                sh '''
                     # Deploy to Tomcat Manager
+                    echo "Deploying service-country.jar to Tomcat..."
                     curl -v -u deployer:deployer123 \
-                    --upload-file ${ARTIFACT_ID}.${PACKAGING} \
+                    --upload-file service-country.jar \
                     "http://localhost:9090/manager/text/deploy?path=/country-service&update=true"
                 '''
             }
