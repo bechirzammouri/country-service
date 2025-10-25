@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'M2_HOME'
+    }
+    
+    stages {
+        stage('Checkout code') {
+            steps {
+                git credentialsId: '7f12ed70-f598-4fce-8456-180b0c6ed2a7', url: 'https://github.com/bechirzammouri/country-service.git'
+                git branch: 'main', url: 'https://github.com/bechirzammouri/country-service.git'
+            }
+        }
+        
+        stage('Build maven') {
+            steps {
+                sh 'mvn clean install'
+            }
+            post {
+                success {
+                    echo 'Maven build successful. Checking for JAR file...'
+                    sh 'ls -la target/*.jar || true'
+                }
+            }
+        }
+        
+        stage('Build Dockerfile') {
+            steps {
+                sh 'docker build . -t my-country-service:$BUILD_NUMBER'
+                
+                withCredentials([string(credentialsId: 'dockerhub-psw', variable: 'dockerhubpwd')]) {
+                    sh 'docker login -u bechirzammouri -p ${dockerhubpwd}'
+                }
+                
+                sh 'docker tag my-country-service:$BUILD_NUMBER bechirzammouri/my-country-service:$BUILD_NUMBER'
+                sh 'docker push bechirzammouri/my-country-service:$BUILD_NUMBER'
+            }
+        }
+        
+        stage('Deploy micro-service') {
+            steps {
+                sh 'docker rm -f $(docker ps -aq)'
+                sh 'docker run -d -p 8087:8087 my-country-service:$BUILD_NUMBER'
+            }
+        }
+    }
+}
