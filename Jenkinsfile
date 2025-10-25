@@ -36,21 +36,23 @@ pipeline{
         
         stage('Download Artifact from Nexus'){
             steps {
+                withCredentials([usernamePassword(credentialsId: 'nexus-credentials', 
+                                          usernameVariable: 'NEXUS_USER', 
+                                          passwordVariable: 'NEXUS_PASS')]) {
                 sh '''
                     # Define variables
                     GROUP_ID=net.bechir
                     ARTIFACT_ID=service-country
                     VERSION=0.0.1-SNAPSHOT
-                    PACKAGING=jar
-                    NEXUS_URL=http://172.17.96.1:8081/repository/maven-snapshots
+                    PACKAGING=war
+                    NEXUS_URL=http://localhost:8081/repository/maven-snapshots
                     
                     # Download artifact from Nexus
                     echo "Downloading ${ARTIFACT_ID}-${VERSION}.${PACKAGING} from Nexus..."
-                    curl -u admin:admin -o ${ARTIFACT_ID}.${PACKAGING} \
-                    "${NEXUS_URL}/${GROUP_ID//.//}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
                     
-                    # Verify download
-                    ls -lh ${ARTIFACT_ID}.${PACKAGING}
+                    curl -u ${NEXUS_USER}:${NEXUS_PASS} -o ${ARTIFACT_ID}.${PACKAGING} \
+                    "${NEXUS_URL}/${GROUP_ID//.//}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.${PACKAGING}"
+
                 '''
             }
         }
@@ -65,6 +67,7 @@ pipeline{
                     "http://localhost:9090/manager/text/deploy?path=/country-service&update=true"
                 '''
             }
+        }
         }
     }
 }
